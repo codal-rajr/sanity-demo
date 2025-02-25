@@ -1,14 +1,20 @@
 import Link from "next/link";
-import { defineQuery } from "next-sanity";
+import { ClientPerspective, defineQuery } from "next-sanity";
 import { sanityFetch } from "@/sanity/live";
+import { draftMode } from "next/headers";
 
 const EVENTS_QUERY = defineQuery(`*[
   _type == "event"
   && defined(slug.current)
-]{_id, name, slug, date}|order(date desc)`);
+]{_id, name, slug, date}`);
 
 export default async function IndexPage() {
-  const { data: events } = await sanityFetch({ query: EVENTS_QUERY });
+  const { isEnabled } = await draftMode();
+  const options = isEnabled
+    ? { perspective: "previewDrafts" as Exclude<ClientPerspective, 'raw'>, useCdn: false, stega: true }
+    : {};
+    
+  const { data: events } = await sanityFetch({ query: EVENTS_QUERY ,...options});
 
   return (
     <main className="flex bg-gray-100 min-h-screen flex-col p-24 gap-12">
