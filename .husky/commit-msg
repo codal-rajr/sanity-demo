@@ -1,0 +1,21 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# This should be the path to the temporary file that contains the commit message.
+COMMIT_MSG_FILE="$1"
+commit_regex='^CW2-[0-9]+ #time (\d+h |\d+m )+.+'
+error_msg="Error: Commit message format is invalid. Format should be: CW2-<issue number> #time <time> <message>"
+
+echo $(cat $COMMIT_MSG_FILE)
+
+# Check if the commit message file exists
+if [ ! -f "$COMMIT_MSG_FILE" ]; then
+    echo "Commit message file not found: $COMMIT_MSG_FILE" >&2
+    exit 1
+fi
+
+# Now, use grep to check the commit message against the regex
+if ! grep -qE "$commit_regex" "$COMMIT_MSG_FILE"; then
+    echo "$error_msg" >&2
+    exit 1
+fi
