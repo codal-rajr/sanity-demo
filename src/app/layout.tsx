@@ -3,8 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SanityLive } from "@/sanity/live";
 import { draftMode } from "next/headers";
-import { VisualEditing } from "next-sanity";
 import { DisableDraftMode } from "@/components/DisableDraftMode";
+import { VisualEditing } from "next-sanity/visual-editing";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -1,11 +1,23 @@
+"use cache";
+
+import { EVENTS_QUERY } from "@/components/events-list";
 import { client } from "@/sanity/client";
 import { sanityFetch } from "@/sanity/live";
 import imageUrlBuilder from "@sanity/image-url";
 import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import { defineQuery, PortableText } from "next-sanity";
+import { cacheLife } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export async function generateStaticParams() {
+  const events = await client.fetch(EVENTS_QUERY);
+
+  return events.map((post) => ({
+    slug: post.slug?.current,
+  }));
+}
 
 const EVENT_QUERY = defineQuery(`*[
     _type == "event" &&
@@ -29,6 +41,8 @@ export default async function EventPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  cacheLife("minutes");
+  
   const { data: event } = await sanityFetch({
     query: EVENT_QUERY,
     params: await params,

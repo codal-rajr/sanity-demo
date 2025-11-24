@@ -27,6 +27,17 @@ export const eventType = defineType({
         rule.required().error(`Required to generate a page on the website`),
       hidden: ({ document }) => !document?.name,
       group: "details",
+      readOnly: ({ value, currentUser }) => {
+        if (!value) {
+          return false;
+        }
+
+        const isAdmin = currentUser?.roles.some(
+          (role) => role.name === "administrator"
+        );
+
+        return !isAdmin;
+      },
     }),
     defineField({
       name: "format",
@@ -89,6 +100,11 @@ export const eventType = defineType({
       name: "tickets",
       type: "url",
       group: ["editorial"],
+    }),
+    defineField({
+      name: "Local",
+      type: "localeString",
+      group: "details",
     }),
   ],
   // Update the preview key in the schema

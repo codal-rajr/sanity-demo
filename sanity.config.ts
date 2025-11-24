@@ -12,7 +12,7 @@ import { structureTool } from "sanity/structure";
 import { apiVersion, dataset, projectId } from "./src/sanity/env";
 import { schema } from "./src/sanity/schemaTypes";
 import { structure } from "./src/sanity/structure";
-import {defaultDocumentNode} from './src/sanity/defaultDocumentNode'
+import { defaultDocumentNode } from "./src/sanity/defaultDocumentNode";
 import { presentationTool } from "sanity/presentation";
 
 export default defineConfig({
@@ -36,4 +36,15 @@ export default defineConfig({
       },
     }),
   ],
+  tools: (prev, { currentUser }) => {
+    const isAdmin = currentUser?.roles.some(
+      (role) => role.name === "administrator"
+    );
+
+    if (isAdmin) {
+      return prev;
+    }
+
+    return prev.filter((tool) => tool.name !== "vision");
+  },
 });
